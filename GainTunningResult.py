@@ -3,6 +3,7 @@ from openpyxl import Workbook
 from openpyxl.styles import PatternFill
 from matplotlib import pyplot as plt
 
+# Ver0307
 RT_Score = []
 # Response time score calculation
 def CalScore_RT(raw_data) :
