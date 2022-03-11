@@ -845,19 +845,19 @@ Description = ["FileName", "group", "seq", "DIR", "VOLT", "P", "I", "D", "AW", "
 "Max Ampere", "Min Ampere", "P2P Ampere", "Graph Link"]  # 29 ~ 32
 
 for col in range(0, len(Description)):
-WS.cell(0 + 1, col + 1).value = Description[col]
+    WS.cell(0 + 1, col + 1).value = Description[col]
 
-score_color = PatternFill(start_color="FF888888", fill_type="solid")  # gray
-WS.cell(0 + 1, 13 + 1).fill = score_color
-WS.cell(0 + 1, 17 + 1).fill = score_color
-WS.cell(0 + 1, 18 + 1).fill = score_color
-WS.cell(0 + 1, 19 + 1).fill = score_color
-WS.cell(0 + 1, 20 + 1).fill = score_color
-WS.cell(0 + 1, 21 + 1).fill = score_color
-WS.cell(0 + 1, 22 + 1).fill = score_color
-WS.cell(0 + 1, 23 + 1).fill = score_color
-WS.cell(0 + 1, 24 + 1).fill = score_color
-WS.cell(0 + 1, 25 + 1).fill = score_color
+    score_color = PatternFill(start_color="FF888888", fill_type="solid")  # gray
+    WS.cell(0 + 1, 13 + 1).fill = score_color
+    WS.cell(0 + 1, 17 + 1).fill = score_color
+    WS.cell(0 + 1, 18 + 1).fill = score_color
+    WS.cell(0 + 1, 19 + 1).fill = score_color
+    WS.cell(0 + 1, 20 + 1).fill = score_color
+    WS.cell(0 + 1, 21 + 1).fill = score_color
+    WS.cell(0 + 1, 22 + 1).fill = score_color
+    WS.cell(0 + 1, 23 + 1).fill = score_color
+    WS.cell(0 + 1, 24 + 1).fill = score_color
+    WS.cell(0 + 1, 25 + 1).fill = score_color
 
 direction_list = ["PR", "PN", "PD", "RP", "RN", "RD", "NP", "NR", "ND", "DP", "DR", "DN"]
 
@@ -873,43 +873,43 @@ FolderLevel1Path = os.getcwd()
 print("(Lv1) %s" % FolderLevel1Name, end="\n")
 
 for FolderLevel2Name in os.listdir(os.getcwd()):
-FolderLevel2Path = os.path.join(os.getcwd(), FolderLevel2Name)
+    FolderLevel2Path = os.path.join(os.getcwd(), FolderLevel2Name)
 if os.path.isdir(FolderLevel2Path):
-print("(Lv2)   └ %s" % FolderLevel2Name, end="\n")
+    print("(Lv2)   └ %s" % FolderLevel2Name, end="\n")
 
 for FolderLevel3Name in os.listdir(FolderLevel2Path):
-FolderLevel3Path = os.path.join(FolderLevel2Path, FolderLevel3Name)
+    FolderLevel3Path = os.path.join(FolderLevel2Path, FolderLevel3Name)
 if os.path.isdir(FolderLevel3Path):
-print("(Lv3)     └ %s" % FolderLevel3Name, end="\n")
+    print("(Lv3)     └ %s" % FolderLevel3Name, end="\n")
 
 for FileName in os.listdir(FolderLevel3Path):
-FilePath = os.path.join(FolderLevel3Path, FileName)
-if os.path.isfile(FilePath):
-if re.findall(".csv", FileName):  # 파일 익스텐션 체크
-if len(FileName.split('_')) == 11:  # 토큰 개수 체크
-print("(Lv4)       └ %-56s " % FileName, end="\n")  # 파일 이름 출력
-valid_file_name_list.append(FileName.split('.')[0])  # 파일 익스텐션 삭제
-valid_file_addr_list.append(FilePath)
-else:
-print("(Lv4)       └ %-56s : not matching number of '_' token " % FileName, end="\n")
+    FilePath = os.path.join(FolderLevel3Path, FileName)
+    if os.path.isfile(FilePath):
+        if re.findall(".csv", FileName):  # 파일 익스텐션 체크
+            if len(FileName.split('_')) == 11:  # 토큰 개수 체크
+                print("(Lv4)       └ %-56s " % FileName, end="\n")  # 파일 이름 출력
+                valid_file_name_list.append(FileName.split('.')[0])  # 파일 익스텐션 삭제
+                valid_file_addr_list.append(FilePath)
+    else:
+        print("(Lv4)       └ %-56s : not matching number of '_' token " % FileName, end="\n")
 
 """
 결과 폴더 확인 및 생성
 """
 
 if not os.path.isdir("Good Graph Result"):
-os.mkdir("Good Graph Result")
+    os.mkdir("Good Graph Result")
 
 for folder in range(0, len(direction_list)):
-if not os.path.isdir("Good Graph Result\\" + direction_list[folder]):
-os.mkdir("Good Graph Result\\" + direction_list[folder])
+    if not os.path.isdir("Good Graph Result\\" + direction_list[folder]):
+        os.mkdir("Good Graph Result\\" + direction_list[folder])
 
 if not os.path.isdir("Bad Graph Result"):
-os.mkdir("Bad Graph Result")
+    os.mkdir("Bad Graph Result")
 
 for folder in range(0, len(direction_list)):
-if not os.path.isdir("Bad Graph Result\\" + direction_list[folder]):
-os.mkdir("Bad Graph Result\\" + direction_list[folder])
+    if not os.path.isdir("Bad Graph Result\\" + direction_list[folder]):
+        os.mkdir("Bad Graph Result\\" + direction_list[folder])
 
 CSVCounter = len(valid_file_name_list)
 print("Number of CSV files : %4d" % CSVCounter, end="\n")
@@ -918,8 +918,8 @@ program_start = time.time()
 
 for index_file in range(0, len(valid_file_name_list)):
 
-threading_variable_file = index_file + 1
-print('\r processed CSV files : %4s ' % str(threading_variable_file), end='')
+    threading_variable_file = index_file + 1
+    print('\r processed CSV files : %4s ' % str(threading_variable_file), end='')
 
 gap_validity = True
 gap_validity_text = ""
@@ -949,68 +949,68 @@ log_time_limit = 800.0  # 그래프 리미트
 log_line_count = 0
 
 with open(valid_file_addr_list[index_file], 'r') as file:
-log = csv.reader(file)
-column = next(log)
+    log = csv.reader(file)
+    column = next(log)
 
-index_time = column.index("Time[ms]")
-index_current = column.index("I_DC")
-index_voltage = column.index("V_DC")
-index_angle = column.index("Angle")
-index_target = column.index("POS TAR")
-index_actuator = column.index("POS ACT")
+    index_time = column.index("Time[ms]")
+    index_current = column.index("I_DC")
+    index_voltage = column.index("V_DC")
+    index_angle = column.index("Angle")
+    index_target = column.index("POS TAR")
+    index_actuator = column.index("POS ACT")
 
-try:
-index_current_state_u = column.index("I_U")
-except ValueError:
-index_current_state_u = -1
+    try:
+        index_current_state_u = column.index("I_U")
+    except ValueError:
+        index_current_state_u = -1
 
-try:
-index_current_state_v = column.index("I_V")
-except ValueError:
-index_current_state_v = -1
+    try:
+        index_current_state_v = column.index("I_V")
+    except ValueError:
+        index_current_state_v = -1
 
-try:
-index_current_state_w = column.index("I_W")
-except ValueError:
-index_current_state_w = -1
+    try:
+        index_current_state_w = column.index("I_W")
+    except ValueError:
+        index_current_state_w = -1
 
-for raw_data in log:
+    for raw_data in log:
 
-log_line_count = log_line_count + 1
+        log_line_count = log_line_count + 1
 
-data_time.append(float(raw_data[index_time]))
-data_current.append(float(raw_data[index_current]))
-data_voltage.append(float(raw_data[index_voltage]))
-data_angle.append(float(raw_data[index_angle]) - float(angle_offset))
-data_actuator.append(float(raw_data[index_actuator]))
+        data_time.append(float(raw_data[index_time]))
+        data_current.append(float(raw_data[index_current]))
+        data_voltage.append(float(raw_data[index_voltage]))
+        data_angle.append(float(raw_data[index_angle]) - float(angle_offset))
+        data_actuator.append(float(raw_data[index_actuator]))
 
-target_conversion = int((float(raw_data[index_target]) * 10) / 10)
-if target_conversion == 8:
-data_target.append(float(1.0))
-elif target_conversion == 7:
-data_target.append(float(3.0))
-elif target_conversion == 6:
-data_target.append(float(5.0))
-elif target_conversion == 5:
-data_target.append(float(7.0))
+        target_conversion = int((float(raw_data[index_target]) * 10) / 10)
+        if target_conversion == 8:
+            data_target.append(float(1.0))
+        elif target_conversion == 7:
+            data_target.append(float(3.0))
+        elif target_conversion == 6:
+            data_target.append(float(5.0))
+        elif target_conversion == 5:
+            data_target.append(float(7.0))
 
-if data_current_state_u != -1:
-data_current_state_u.append(float(raw_data[index_current_state_u]) + 15.0)  # offset
-else:
-data_current_state_u.append(float(0.0))
+        if data_current_state_u != -1:
+            data_current_state_u.append(float(raw_data[index_current_state_u]) + 15.0)  # offset
+        else:
+            data_current_state_u.append(float(0.0))
 
-if data_current_state_v != -1:
-data_current_state_v.append(float(raw_data[index_current_state_v]))
-else:
-data_current_state_u.append(float(0.0))
+        if data_current_state_v != -1:
+            data_current_state_v.append(float(raw_data[index_current_state_v]))
+        else:
+            data_current_state_u.append(float(0.0))
 
-if data_current_state_w != -1:
-data_current_state_w.append(float(raw_data[index_current_state_w]) - 15.0)  # offset
-else:
-data_current_state_u.append(float(0.0))
+        if data_current_state_w != -1:
+            data_current_state_w.append(float(raw_data[index_current_state_w]) - 15.0)  # offset
+        else:
+            data_current_state_u.append(float(0.0))
 
-if float(raw_data[index_time]) > log_time_limit:
-break
+        if float(raw_data[index_time]) > log_time_limit:
+            break
 
 # MEDIAN FILTER _ Find Start Point
 median_flt(data_current)
@@ -1022,22 +1022,22 @@ median_flt(data_current_state_w)
 
 current_over_limit = 40.0
 for previous in range(1, log_line_count):
-if data_voltage[previous] >= current_over_limit:
-data_current[previous] = data_current[previous - 1]
-data_voltage[previous] = data_voltage[previous - 1]
-data_angle[previous] = data_angle[previous - 1]
-data_current_state_u[previous] = data_current_state_u[previous - 1]
-data_current_state_v[previous] = data_current_state_v[previous - 1]
-data_current_state_w[previous] = data_current_state_w[previous - 1]
+    if data_voltage[previous] >= current_over_limit:
+        data_current[previous] = data_current[previous - 1]
+        data_voltage[previous] = data_voltage[previous - 1]
+        data_angle[previous] = data_angle[previous - 1]
+        data_current_state_u[previous] = data_current_state_u[previous - 1]
+        data_current_state_v[previous] = data_current_state_v[previous - 1]
+        data_current_state_w[previous] = data_current_state_w[previous - 1]
 
 if MAKE_A_PLOT_FLAG:
-plt.figure(figsize=(19, 9.5))
+    plt.figure(figsize=(19, 9.5))
 
-FileNameList = FileName.split('.')[0].split('_')
-Angle = SettingSubPlot32_135(data_time, data_angle, FileNameList)
-Pos = SettingSubPlot32_2(data_time, data_target, data_actuator)
-Voltage = SettingSubPlot32_4(data_time, data_voltage)
-Current = SettingSubPlot32_6(data_time, data_current)
+    FileNameList = FileName.split('.')[0].split('_')
+    Angle = SettingSubPlot32_135(data_time, data_angle, FileNameList)
+    Pos = SettingSubPlot32_2(data_time, data_target, data_actuator)
+    Voltage = SettingSubPlot32_4(data_time, data_voltage)
+    Current = SettingSubPlot32_6(data_time, data_current)
 
     if MAKE_A_PLOT_FLAG:
         plt.tight_layout()
