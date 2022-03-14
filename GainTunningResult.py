@@ -1,5 +1,6 @@
 import csv
 import os
+import pandas as pd
 
 import numpy as np
 from openpyxl import Workbook
@@ -7,10 +8,9 @@ from openpyxl.styles import PatternFill
 from openpyxl.formatting.rule import CellIsRule
 from matplotlib import pyplot as plt
 
-# Ver0311
-# - MAX MIN 추가
-# - 결과데이터 Plot 형태로 이미지 파일 저장
-# - 엑셀에 이미지 파일 하이퍼링크 열 추가
+# Ver0314
+# - 점수값 플롯에 추가
+# - 제어 시 적용된 게인값 불러와서 적용 (gaintuning.csv)
 
 RT_Score = []
 # Response time score calculation
@@ -18,67 +18,37 @@ def CalScore_RT(raw_data) :
     raw_data[1] = int(raw_data[1])
     raw_data[2] = int(raw_data[2])
     score_val = 0
+    spec_val = 0
 
     if raw_data[1] == 0 : #PR
-        if raw_data[2] > 250 :
-            score_val = 100-abs(raw_data[2]-250)
-        else :
-            score_val = 100
+        spec_val = 250
     elif raw_data[1] == 1: #PN
-        if raw_data[2] > 300:
-            score_val = 100-abs(raw_data[2] - 300)
-        else:
-            score_val = 100
+        spec_val = 300
     elif raw_data[1] == 2: #PD
-        if raw_data[2] > 450:
-            score_val = 100-abs(raw_data[2] - 450)
-        else:
-            score_val = 100
+        spec_val = 450
     elif raw_data[1] == 3: #RP
-        if raw_data[2] > 1000:
-            score_val = 100-abs(raw_data[2] - 1000)
-        else:
-            score_val = 100
+        spec_val = 1000
     elif raw_data[1] == 4: #RN
-        if raw_data[2] > 200:
-            score_val = 100-abs(raw_data[2] - 200)
-        else:
-            score_val = 100
+        spec_val = 200
     elif raw_data[1] == 5:  # RD
-        if raw_data[2] > 350:
-            score_val = 100-abs(raw_data[2] - 350)
-        else:
-            score_val = 100
+        spec_val = 350
     elif raw_data[1] == 6:  # NP
-        if raw_data[2] > 300:
-            score_val = 100-abs(raw_data[2] - 300)
-        else:
-            score_val = 100
+        spec_val = 300
     elif raw_data[1] == 7:  # NR
-        if raw_data[2] > 200:
-            score_val = 100-abs(raw_data[2] - 200)
-        else:
-            score_val = 100
+        spec_val = 200
     elif raw_data[1] == 8:  # ND
-        if raw_data[2] > 200:
-            score_val = 100-abs(raw_data[2] - 200)
-        else:
-            score_val = 100
+        spec_val = 200
     elif raw_data[1] == 9:  # DP
-        if raw_data[2] > 1000:
-            score_val = 100-abs(raw_data[2] - 1000)
-        else:
-            score_val = 100
+        spec_val = 1000
     elif raw_data[1] == 10:  # DR
-        if raw_data[2] > 350:
-            score_val = 100-abs(raw_data[2] - 350)
-        else:
-            score_val = 100
+        spec_val = 350
     elif raw_data[1] == 11:  # DN
-        if raw_data[2] > 200:
-            score_val = 100-abs(raw_data[2] - 200)
-        else:
-            score_val = 100
+        spec_val = 200
+
+    if raw_data[2] > spec_val:
+        score_val = 100-abs(raw_data[2] - spec_val)
+    else:
+        score_val = 100
 
     list = [int(raw_data[0]), score_val]
     RT_Score.append(list)
@@ -122,6 +92,11 @@ def FindBestGainSet(sum_score):
         else:
             continue
     print("[%d] gainset (score : %d) is the Best Gain Set!" %(gainset,max))
+
+# 엑셀 게인값 불러오기
+
+df = pd.read_csv('./gaintuning.csv',usecols=['GroupNum', 'Type', 'Pos_P', 'Pos_I', 'Pos_D', 'Pos_AntiW', 'Pos_Term', 'Spd_P', 'Spd_I', 'Spd_AntiW', 'Curr_P', 'Curr_I', 'Curr_AntiW'])
+
 
 # 엑셀 데이터 저장
 WB = Workbook()
@@ -231,21 +206,44 @@ lastcol = WS.max_column
 # 행 데이터 확인
 for row in WS.iter_rows(min_row = 2, min_col = 2, max_col = 14):
     pltval = []
+    # graph 크기 수정, 해상도 설정
+    plt.figure(figsize = (8,5), dpi = 200)
+
     for cell in row:
         if cell.value == "응답시간" :
-            plt.title('Response Time')
+            plt.title('Response Time Score')
         elif cell.value == "제어정밀도" :
-            plt.title('Stop Accuracy')
+            plt.title('Stop Accuracy Score')
         elif cell.value == "오버슈트" :
-            plt.title('Overshoot')
+            plt.title('Overshoot Score')
         else :
             pltval.append(cell.value)
 
+    # 그래프 출력
     plt.axhline(100, color = 'lightgray', linestyle = '--')
     plt.xticks([0,1,2,3,4,5,6,7,8,9,10,11],xlabels)
     plt.ylim([-200,200])
     plt.plot(pltval, 'o')
+
+    x_pos = 0
+    # Annotation
+    for i in range(len(pltval)) :
+        if x_pos == 12:
+            x_pos = 0
+        plt.text(x_pos, pltval[i] + 10, int(pltval[i]), fontsize=7)
+        x_pos = x_pos+1
+
     imgcnt = imgcnt + 1
+
+    # 플롯에 제어 시 적용된 게인 표 추가
+    gbnum = WS.cell(row=imgcnt+1, column=1).value
+    gb = df.groupby('GroupNum').get_group(gbnum)
+    columns = gb.columns
+    tuples = [tuple(x) for x in gb.to_numpy()]
+    plt.table(cellText = tuples, colLabels=columns, loc="bottom", bbox=[0.0, -1.2, 1.0, 1.0], cellLoc='center')
+
+    # table 공간
+    plt.gcf().subplots_adjust(bottom=0.5)
     plt.savefig('SaveFig\\img_'+str(imgcnt)+'.png')
     graph_file_link = 'SaveFig\\img_'+str(imgcnt)+'.png'
     plt.close()
@@ -257,5 +255,6 @@ for row in WS.iter_rows(min_row = 2, min_col = 2, max_col = 14):
     WS.cell(imgcnt+1, lastcol+1).value = graph_file_link
     WS.cell(imgcnt+1, lastcol+1).hyperlink = "./" + graph_file_link
 
-
 WB.save("SQ GainTunning Test Result.xlsx")
+
+
