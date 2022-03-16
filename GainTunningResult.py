@@ -6,10 +6,9 @@ import pandas as pd
 from openpyxl import Workbook
 from matplotlib import pyplot as plt
 
-# Ver0315
-# - 플롯에 점수 계산 기준 표시
-# - 실행 시간 출력
-# - 점수가 음수값이면 0 으로 저장
+# Ver0316
+# - 게인셋별 총점수 출력
+# - 게인셋별 Rank 적용
 
 RT_Score = []
 # Response time score calculation
@@ -55,6 +54,7 @@ def CalScore_RT(raw_data) :
     RT_Score.append(list)
 
 
+
 SA_Score = []
 # Stop Accuracy score calculation
 def CalScore_SA(raw_data) :
@@ -82,18 +82,6 @@ def CalScore_OS(raw_data) :
     list = [int(raw_data[0]), score_val]
     OS_Score.append(list)
 
-
-def FindBestGainSet(sum_score):
-    max = 0
-    for idx in sum_score :
-        val = int(idx[1])
-        if max < val :
-            max = val
-            gainset = int(idx[0])
-        else:
-            continue
-    print("[%d] gainset (score : %d) is the Best Gain Set!" %(gainset,max))
-
 # 엑셀 게인값 불러오기
 df = pd.read_csv('./gaintuning.csv',usecols=['GroupNum', 'Type', 'Pos_P', 'Pos_I', 'Pos_D', 'Pos_AntiW', 'Pos_Term', 'Spd_P', 'Spd_I', 'Spd_AntiW', 'Curr_P', 'Curr_I', 'Curr_AntiW'])
 
@@ -102,7 +90,7 @@ WB = Workbook()
 WS = WB.active
 WS.title = "SQ_Auto_Gaintunning"
 
-Description = ["Gain Set", "항목", "PR", "PN", "PD", "RP", "RN", "RD", "NP", "NR", "ND", "DP", "DR", "DN", "총점수", "MAX", "MIN"]
+Description = ["Gain Set", "항목", "PR", "PN", "PD", "RP", "RN", "RD", "NP", "NR", "ND", "DP", "DR", "DN", "점수", "MAX", "MIN", "총점"]
 for col in range(0, len(Description)):
     WS.cell(0+1, col+1).value = Description[col]
 
@@ -111,6 +99,7 @@ sum_score_SA = 0
 sum_score_OS = 0
 log_count = 0
 sum_score = []
+resAll = []
 row = 0
 # read excel file
 with open('./TEST_RESULT.csv', 'r') as file :
@@ -169,28 +158,38 @@ with open('./TEST_RESULT.csv', 'r') as file :
             min_OS = min(val_list)
             print("[%d] Gainset Overshoot Score : %d" % (gainset, sum_score_OS))
 
-        # Excel 에 data 저장
-        col = 0
-        WS.append([resRT[col][0], "응답시간", resRT[col][1], resRT[col + 1][1], resRT[col + 2][1], resRT[col + 3][1],
-                   resRT[col + 4][1], resRT[col + 5][1], resRT[col + 6][1], resRT[col + 7][1], resRT[col + 8][1],
-                   resRT[col + 9][1], resRT[col + 10][1], resRT[col + 11][1],sum_score_RT, max_RT, min_RT])
-
-        WS.append([resSA[col][0], "제어정밀도", resSA[col][1], resSA[col + 1][1], resSA[col + 2][1], resSA[col + 3][1],
-                   resSA[col + 4][1], resSA[col + 5][1], resSA[col + 6][1], resSA[col + 7][1], resSA[col + 8][1],
-                   resSA[col + 9][1], resSA[col + 10][1], resSA[col + 11][1],sum_score_SA, max_SA, min_SA])
-
-        WS.append([resOS[col][0], "오버슈트", resOS[col][1], resOS[col + 1][1], resOS[col + 2][1], resOS[col + 3][1],
-                   resOS[col + 4][1], resOS[col + 5][1], resOS[col + 6][1], resOS[col + 7][1], resOS[col + 8][1],
-                   resOS[col + 9][1], resOS[col + 10][1], resOS[col + 11][1],sum_score_OS, max_OS, min_OS])
-
-        list = [gainset, int(sum_score_OS + sum_score_RT + sum_score_SA)]
+        sum_scoreval = int(sum_score_OS + sum_score_RT + sum_score_SA)
+        list = [gainset, sum_scoreval]
         sum_score.append(list)
+
+        col = 0
+        resAll.append([resRT[col][0], "응답시간", resRT[col][1], resRT[col + 1][1], resRT[col + 2][1], resRT[col + 3][1],
+                   resRT[col + 4][1], resRT[col + 5][1], resRT[col + 6][1], resRT[col + 7][1], resRT[col + 8][1],
+                   resRT[col + 9][1], resRT[col + 10][1], resRT[col + 11][1], sum_score_RT, max_RT, min_RT, sum_scoreval])
+
+        resAll.append([resSA[col][0], "제어정밀도", resSA[col][1], resSA[col + 1][1], resSA[col + 2][1], resSA[col + 3][1],
+                   resSA[col + 4][1], resSA[col + 5][1], resSA[col + 6][1], resSA[col + 7][1], resSA[col + 8][1],
+                   resSA[col + 9][1], resSA[col + 10][1], resSA[col + 11][1], sum_score_SA, max_SA, min_SA, sum_scoreval])
+
+        resAll.append([resOS[col][0], "오버슈트", resOS[col][1], resOS[col + 1][1], resOS[col + 2][1], resOS[col + 3][1],
+                   resOS[col + 4][1], resOS[col + 5][1], resOS[col + 6][1], resOS[col + 7][1], resOS[col + 8][1],
+                   resOS[col + 9][1], resOS[col + 10][1], resOS[col + 11][1], sum_score_OS, max_OS, min_OS, sum_scoreval])
+
         sum_score_RT = 0
         sum_score_SA = 0
         sum_score_OS = 0
         start = start + div
 
-    FindBestGainSet(sum_score)
+    # Rank 별로 엑셀에 저장되도록 하려면?
+    # Excel 에 data 저장
+    sum_score.sort(key = lambda x : -x[1])
+    print("[%d] gainset (score : %d) is the Best Gain Set!" % (sum_score[0][0], sum_score[0][1]))
+
+    for idx in sum_score :
+        WS.append(resAll[idx[0]*3-3])
+        WS.append(resAll[idx[0]*3-2])
+        WS.append(resAll[idx[0]*3-1])
+
 
 # 결과 데이터 플롯 파일 생성 및 엑셀파일에 추가
 if not os.path.isdir("SaveFig") :
